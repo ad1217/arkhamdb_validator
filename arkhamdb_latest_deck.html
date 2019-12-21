@@ -1,0 +1,16 @@
+<script>
+async function get_deck(deckID) {
+  return fetch(`https://arkhamdb.com/api/public/deck/${deckID}.json`)
+    .then(r => r.json())
+}
+
+async function get_last_deck(deckID) {
+  let d = null;
+  while (d === null || d.next_deck !== null) {
+    d = await get_deck(d ? d.next_deck : deckID);
+  }
+  window.location = `https://arkhamdb.com/deck/view/${d.id}`;
+};
+
+get_last_deck(window.location.search.slice(1));
+</script>
