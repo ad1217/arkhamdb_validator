@@ -6,9 +6,12 @@
 493047
   </textarea>
   <button id="submit"> Check! </button>
-  <div>
-    Cards with number > 2:
-    <div id="output">
+  <div class="output">
+    <div> Last DeckIDs
+      <ul id="lastDeckIDs"> </ul>
+    </div>
+    <div> Cards with total count > 2:
+      <ul id="cardCountOut"> </ul>
     </div>
   </div>
 </body>
@@ -53,15 +56,24 @@ async function main() {
         return acc;
       }, {});
 
-  const output = document.querySelector('#output');
-  output.innerHTML = '';
+  const cardCountOut = document.querySelector('#cardCountOut');
+  cardCountOut.innerHTML = '';
 
   Object.entries(cardCounts)
     .filter(([cardID, count]) => count > 2)
     .forEach(([cardID, count]) => {
-      const div = output.appendChild(document.createElement('div'));
-      div.textContent = `${resolveCard(cardID)}: ${count}`
+      const item = cardCountOut.appendChild(document.createElement('li'));
+      item.textContent = `${resolveCard(cardID)}: ${count}`
     });
+
+  const lastDeckIDs = document.querySelector('#lastDeckIDs');
+  lastDeckIDs.innerHTML = '';
+
+  decks.forEach(deck => {
+    link = lastDeckIDs.appendChild(document.createElement('a'));
+    link.href = 'https://arkhamdb.com/deck/view/' + deck.id;
+    link.textContent = 'https://arkhamdb.com/deck/view/' + deck.id;
+  })
 }
 
 document.querySelector('#submit').addEventListener('click', main);
@@ -72,5 +84,13 @@ document.querySelector('#submit').addEventListener('click', main);
   display: block;
   width: 70ex;
   height: 10em;
+}
+
+.output > * {
+  margin-bottom: 1em;
+}
+
+#lastDeckIDs a {
+  display: list-item;
 }
 </style>
