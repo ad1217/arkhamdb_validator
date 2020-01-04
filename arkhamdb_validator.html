@@ -6,11 +6,19 @@ Yellow-https://arkhamdb.com/deck/view/559534
 Red-https://arkhamdb.com/deck/view/559826</textarea>
   <button id="submit"> Check! </button>
   <div class="output">
-    <div> Last DeckIDs
-      <ul id="lastDeckIDs"> </ul>
+    <div>
+      <div>
+        <h3> Last DeckIDs </h3>
+        <ul id="lastDeckIDs"> </ul>
+      </div>
+      <div>
+        <h3> Cards with total count > 2: </h3>
+        <ul id="cardCountOut"> </ul>
+      </div>
     </div>
-    <div> Cards with total count > 2:
-      <ul id="cardCountOut"> </ul>
+    <div>
+      <h3>All Cards:</h3>
+      <ul id="allCardsOut"> </ul>
     </div>
   </div>
 </body>
@@ -37,6 +45,11 @@ async function main() {
     return card ? card.name : "Unknown";
   }
 
+  function appendCard(element, cardID, count) {
+    const item = element.appendChild(document.createElement('li'));
+    item.textContent = `${resolveCard(cardID)}: ${count}`
+  }
+
   const cards = await fetch("https://arkhamdb.com/api/public/cards/")
     .then(r => r.json());
 
@@ -57,12 +70,16 @@ async function main() {
 
   const cardCountOut = document.querySelector('#cardCountOut');
   cardCountOut.innerHTML = '';
+  const allCardsOut = document.querySelector('#allCardsOut');
+  allCardsOut.innerHTML = '';
 
   Object.entries(cardCounts)
-    .filter(([cardID, count]) => count > 2)
     .forEach(([cardID, count]) => {
-      const item = cardCountOut.appendChild(document.createElement('li'));
-      item.textContent = `${resolveCard(cardID)}: ${count}`
+      appendCard(allCardsOut, cardID, count);
+
+      if (count > 2) {
+        appendCard(cardCountOut, cardID, count);
+      }
     });
 
   const lastDeckIDs = document.querySelector('#lastDeckIDs');
@@ -83,6 +100,12 @@ document.querySelector('#submit').addEventListener('click', main);
   display: block;
   width: 70ex;
   height: 10em;
+}
+
+.output {
+  margin: 0 2em;
+  display: flex;
+  justify-content: space-between;
 }
 
 .output > * {
