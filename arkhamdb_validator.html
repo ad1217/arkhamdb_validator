@@ -14,63 +14,63 @@
 </body>
 
 <script>
- async function getDeck(deckID) {
-   return fetch(`https://arkhamdb.com/api/public/deck/${deckID}.json`)
-     .then(r => r.json())
- }
+async function getDeck(deckID) {
+  return fetch(`https://arkhamdb.com/api/public/deck/${deckID}.json`)
+    .then(r => r.json())
+}
 
- async function getAllDecks(deckIDs) {
-   return Promise.all(deckIDs.map(async deckID => {
-     let d = null;
-     while (d === null || d.next_deck !== null) {
-       d = await getDeck(d ? d.next_deck : deckID);
-     }
-     return d;
-   }));
- }
+async function getAllDecks(deckIDs) {
+  return Promise.all(deckIDs.map(async deckID => {
+    let d = null;
+    while (d === null || d.next_deck !== null) {
+      d = await getDeck(d ? d.next_deck : deckID);
+    }
+    return d;
+  }));
+}
 
- async function main() {
-   function resolveCard(cardID) {
-     const card = cards.find(c => c.code === cardID);
-     return card ? card.name : "Unknown";
-   }
+async function main() {
+  function resolveCard(cardID) {
+    const card = cards.find(c => c.code === cardID);
+    return card ? card.name : "Unknown";
+  }
 
-   const cards = await fetch("https://arkhamdb.com/api/public/cards/")
-     .then(r => r.json());
+  const cards = await fetch("https://arkhamdb.com/api/public/cards/")
+    .then(r => r.json());
 
-   // const deckIDs = ['496803', '499642', '526251']
-   // const deckIDs = ['493723', '479501', '489153', '493047'];
-   const deckIDs = document.querySelector('#deckList').value.trim().split('\n')
-     .map(deckID => deckID.split('/').pop());
-   decks = [...(await getAllDecks(deckIDs))]
+  // const deckIDs = ['496803', '499642', '526251']
+  // const deckIDs = ['493723', '479501', '489153', '493047'];
+  const deckIDs = document.querySelector('#deckList').value.trim().split('\n')
+    .map(deckID => deckID.split('/').pop());
+  decks = [...(await getAllDecks(deckIDs))]
 
-   let cardCounts =
-     decks.map(deck => Object.entries(deck.slots))
-       .reduce((acc, deck) => {
-         deck.map(([cardID, count]) => {
-           acc[cardID] = parseInt(count) + (acc[cardID] ? acc[cardID] : 0);
-         });
-         return acc;
-       }, {});
+  let cardCounts =
+    decks.map(deck => Object.entries(deck.slots))
+      .reduce((acc, deck) => {
+        deck.map(([cardID, count]) => {
+          acc[cardID] = parseInt(count) + (acc[cardID] ? acc[cardID] : 0);
+        });
+        return acc;
+      }, {});
 
-   const output = document.querySelector('#output');
-   output.innerHTML = '';
+  const output = document.querySelector('#output');
+  output.innerHTML = '';
 
-   Object.entries(cardCounts)
-     .filter(([cardID, count]) => count > 2)
-     .forEach(([cardID, count]) => {
-       const div = output.appendChild(document.createElement('div'));
-       div.textContent = `${resolveCard(cardID)}: ${count}`
-     });
- }
+  Object.entries(cardCounts)
+    .filter(([cardID, count]) => count > 2)
+    .forEach(([cardID, count]) => {
+      const div = output.appendChild(document.createElement('div'));
+      div.textContent = `${resolveCard(cardID)}: ${count}`
+    });
+}
 
- document.querySelector('#submit').addEventListener('click', main);
+document.querySelector('#submit').addEventListener('click', main);
 </script>
 
 <style>
- #deckList {
-   display: block;
-   width: 70ex;
-   height: 10em;
- }
+#deckList {
+  display: block;
+  width: 70ex;
+  height: 10em;
+}
 </style>
