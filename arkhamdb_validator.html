@@ -46,7 +46,9 @@ async function main() {
   }
 
   function appendCard(element, cardID, count) {
-    const item = element.appendChild(document.createElement('li'));
+    const item = element.appendChild(document.createElement('li'))
+      .appendChild(document.createElement('a'));
+    item.href = 'https://arkhamdb.com/card/' + cardID;
     item.textContent = `${resolveCard(cardID)}: ${count}`
   }
 
