@@ -86,7 +86,6 @@ async function main() {
   lastDeckIDs.innerHTML = '';
 
   deckList.split('\n').forEach((line, idx) => {
-    console.log(line);
     const li = lastDeckIDs.appendChild(document.createElement('li'));
     li.textContent = line.replace(
       /https:\/\/arkhamdb.com\/deck\/(view|edit)\/.*/, '');
@@ -94,7 +93,8 @@ async function main() {
       const link = li.appendChild(document.createElement('a'));
       const deck = decks.shift();
       link.href = 'https://arkhamdb.com/deck/view/' + deck.id;
-      link.textContent = 'https://arkhamdb.com/deck/view/' + deck.id;
+      link.textContent = deck.name;
+      li.insertAdjacentText('beforeend', ` [${deck.id}]`);
     }
   })
 }
