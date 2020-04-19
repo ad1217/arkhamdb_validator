@@ -57,7 +57,10 @@ async function main() {
 
   const deckList = document.querySelector('#deckList').value.trim();
   window.history.replaceState(null, "Title", "?" + encodeURIComponent(deckList));
-  const deckIDs = deckList.split('\n').map(deckID => deckID.split('/').pop());
+  const deckIDs = deckList.split('\n')
+    .map(deckID => deckID.split('/').pop())
+    .filter(deckID => deckID !== "" && !isNaN(deckID));
+  console.log(deckIDs)
   decks = [...(await getAllDecks(deckIDs))];
 
   let cardCounts =
