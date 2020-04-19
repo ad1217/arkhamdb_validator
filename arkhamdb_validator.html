@@ -55,11 +55,10 @@ async function main() {
   const cards = await fetch("https://arkhamdb.com/api/public/cards/")
     .then(r => r.json());
 
-  // const deckIDs = ['496803', '499642', '526251']
-  // const deckIDs = ['493723', '479501', '489153', '493047'];
-  const deckIDs = document.querySelector('#deckList').value.trim().split('\n')
-    .map(deckID => deckID.split('/').pop());
-  decks = [...(await getAllDecks(deckIDs))]
+  const deckList = document.querySelector('#deckList').value.trim();
+  window.history.replaceState(null, "Title", "?" + encodeURIComponent(deckList));
+  const deckIDs = deckList.split('\n').map(deckID => deckID.split('/').pop());
+  decks = [...(await getAllDecks(deckIDs))];
 
   let cardCounts =
     decks.map(deck => Object.entries(deck.slots))
@@ -95,6 +94,13 @@ async function main() {
 }
 
 document.querySelector('#submit').addEventListener('click', main);
+window.addEventListener('load', (evt) => {
+  if (window.location.search !== "") {
+    document.querySelector('#deckList').textContent =
+      decodeURIComponent(window.location.search.slice(1));
+    main();
+  }
+});
 </script>
 
 <style>
